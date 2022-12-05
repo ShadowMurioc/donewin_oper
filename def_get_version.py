@@ -1,16 +1,9 @@
 import re
 import pandas as pd
 from pathlib import Path
+import os
 import openpyxl
 import glob
-import os
-# path = os.path.dirname(os.path.abspath(__file__))
-# print(path)
-
-# dirPath = glob.iglob('/Users/libo/Desktop/工作文件/Github/Donewin_Oper/donewin_oper/东旺/202202生产华为')
-# for file in dirPath:
-#     files = os.listdir(file)
-#     print(files)
 
 
 def hw_get_version(filelist):
@@ -26,9 +19,10 @@ def hw_get_version(filelist):
             data_ver = data[0:100]
             if len(data_ver) > 0:
                 ver_data = data_ver[4]
+                uptime = re.findall(r'[0-9]{1,9}\s[a-zA-Z]{1,5},\s[0-9]{1,9}\s[a-zA-Z]{1,4},\s[0-9]{1,9}\s[a-zA-Z]{1,5},\s[0-9]{1,9}\s[a-zA-Z]{1,7}', ver_data)
             else:
                 pass
-            dict1 = {'设备名': device, '运行时间': ver_data}
+            dict1 = {'设备名': device, '运行时间': uptime}
             df1 = pd.DataFrame(dict1, index=[n])
             df_uptime = pd.concat([df_uptime, df1], join="outer", axis=0, copy=False, ignore_index=True)
     df_uptime.to_excel('ver.xlsx', sheet_name='hw_version', index=False)
@@ -50,14 +44,14 @@ def hw_get_mem(filelist):
                 if len(data_mem[i]) == 0:
                     pass
                 else:
-                    mem_Data = data_mem[i]
-            dict1_mem = {'设备名': device, '内存使用率': mem_Data}
+                    mem_data = data_mem[i]
+                    mem_data = re.findall(r'\b[0-9]{1,2}%', str(mem_data))
+            dict1_mem = {'设备名': device, '内存使用率': mem_data}
             df1_mem = pd.DataFrame(dict1_mem, index=[n])
             n = n + 1
             df_mem = pd.concat([df_mem, df1_mem], join="outer", axis=0, copy=False, ignore_index=True)
     df_write_mem = pd.ExcelWriter('ver.xlsx', mode='a', engine='openpyxl', if_sheet_exists='new')
     df_mem.to_excel(df_write_mem, sheet_name='hw_mem', index=False)
-    # df_write_mem.save()
     df_write_mem.close()
 
 
@@ -68,4 +62,3 @@ if __name__ == '__main__':
     hw_get_version(verList)
     memList = list(p.glob("**/display memory.txt"))
     hw_get_mem(memList)
-
