@@ -1,6 +1,7 @@
 import re
 import pandas as pd
 from pathlib import Path
+import openpyxl
 import glob
 import os
 # path = os.path.dirname(os.path.abspath(__file__))
@@ -10,10 +11,10 @@ import os
 # for file in dirPath:
 #     files = os.listdir(file)
 #     print(files)
-#
-#
+
+
 def hw_get_version(filelist):
-    df = pd.DataFrame(columns=['设备名', '运行时间'])
+    df_uptime = pd.DataFrame(columns=['设备名', '运行时间'])
     n = 1
     for file_list in filelist:
         with open(file_list) as f:
@@ -29,10 +30,8 @@ def hw_get_version(filelist):
                 pass
             dict1 = {'设备名': device, '运行时间': ver_data}
             df1 = pd.DataFrame(dict1, index=[n])
-            n = n + 1
-            df = df.append(df1)
-    print(df)
-    df.to_excel('ver.xlsx', sheet_name='hw_version', index=False)
+            df_uptime = pd.concat([df_uptime, df1], join="outer", axis=0, copy=False, ignore_index=True)
+    df_uptime.to_excel('ver.xlsx', sheet_name='hw_version', index=False)
 
 
 # def hw_get_mem(filelist):
@@ -65,7 +64,6 @@ def hw_get_version(filelist):
 if __name__ == '__main__':
     p = os.path.dirname(os.path.abspath(__file__))
     p = Path(p + '/东旺/202202生产华为')
-    print(p)
     verList = list(p.glob("**/display version.txt"))
     hw_get_version(verList)
     # memList = list(p.glob("**/display memory.txt"))
