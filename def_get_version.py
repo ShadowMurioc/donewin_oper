@@ -34,31 +34,31 @@ def hw_get_version(filelist):
     df_uptime.to_excel('ver.xlsx', sheet_name='hw_version', index=False)
 
 
-# def hw_get_mem(filelist):
-#     df_mem = pd.DataFrame(columns=['设备名', '内存使用率'])
-#     n = 1
-#     for file_list in filelist:
-#         with open(file_list) as f:
-#             device = re.findall(r"\b10.*/", str(f))[0][0:-1]
-#             lines = f.readlines()
-#             lines = [i.strip() for i in lines]
-#             lines = [i.strip('-') for i in lines]
-#             data = list(filter(None, lines))
-#             data_mem = data[0:100]
-#             for i in range(len(data_mem)):
-#                 data_mem[i] = re.findall(r'Memory Using.*', data_mem[i])
-#                 if len(data_mem[i]) == 0:
-#                     pass
-#                 else:
-#                     mem_Data = data_mem[i]
-#             dict1_mem = {'设备名': device, '内存使用率': mem_Data}
-#             df1_mem = pd.DataFrame(dict1_mem, index=[n])
-#             n = n + 1
-#             df_mem = df_mem.append(df1_mem)
-#     df_write_mem = pd.ExcelWriter('ver.xlsx', mode='a', engine='openpyxl', if_sheet_exists='new')
-#     df_mem.to_excel(df_write_mem, sheet_name='hw_mem', index=False)
-#     df_write_mem.save()
-#     df_write_mem.close()
+def hw_get_mem(filelist):
+    df_mem = pd.DataFrame(columns=['设备名', '内存使用率'])
+    n = 1
+    for file_list in filelist:
+        with open(file_list) as f:
+            device = re.findall(r"\b10.*/", str(f))[0][0:-1]
+            lines = f.readlines()
+            lines = [i.strip() for i in lines]
+            lines = [i.strip('-') for i in lines]
+            data = list(filter(None, lines))
+            data_mem = data[0:100]
+            for i in range(len(data_mem)):
+                data_mem[i] = re.findall(r'Memory Using.*', data_mem[i])
+                if len(data_mem[i]) == 0:
+                    pass
+                else:
+                    mem_Data = data_mem[i]
+            dict1_mem = {'设备名': device, '内存使用率': mem_Data}
+            df1_mem = pd.DataFrame(dict1_mem, index=[n])
+            n = n + 1
+            df_mem = pd.concat([df_mem, df1_mem], join="outer", axis=0, copy=False, ignore_index=True)
+    df_write_mem = pd.ExcelWriter('ver.xlsx', mode='a', engine='openpyxl', if_sheet_exists='new')
+    df_mem.to_excel(df_write_mem, sheet_name='hw_mem', index=False)
+    # df_write_mem.save()
+    df_write_mem.close()
 
 
 if __name__ == '__main__':
@@ -66,6 +66,6 @@ if __name__ == '__main__':
     p = Path(p + '/东旺/202202生产华为')
     verList = list(p.glob("**/display version.txt"))
     hw_get_version(verList)
-    # memList = list(p.glob("**/display memory.txt"))
-    # hw_get_mem(memList)
+    memList = list(p.glob("**/display memory.txt"))
+    hw_get_mem(memList)
 
