@@ -1,11 +1,11 @@
 import re
 import pandas as pd
 from pathlib import Path
-# import glob
-# import os
-#
-#
-# dirPath = glob.iglob('/Users/libo/Desktop/工作文件/Pycharm of Linc/Donewin_Operation/东旺')
+import glob
+import os
+
+
+# dirPath = glob.iglob('/Users/libo/Desktop/工作文件/Github/Donewin_Oper/donewin_oper/东旺/202202生产华为')
 # for file in dirPath:
 #     files = os.listdir(file)
 #     print(files)
@@ -30,6 +30,7 @@ def hw_get_version(filelist):
             df1 = pd.DataFrame(dict1, index=[n])
             n = n + 1
             df = df.append(df1)
+    print(df)
     # print(df)
     # help(df.to_excel)
     df.to_excel('ver.xlsx', sheet_name='hw_version', index=False)
@@ -85,3 +86,4 @@ if __name__ == '__main__':
     hw_get_version(verList)
     memList = list(p.glob("**/display memory.txt"))
     hw_get_mem(memList)
+
