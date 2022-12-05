@@ -68,6 +68,6 @@ if __name__ == '__main__':
     print(p)
     verList = list(p.glob("**/display version.txt"))
     hw_get_version(verList)
-    memList = list(p.glob("**/display memory.txt"))
-    hw_get_mem(memList)
+    # memList = list(p.glob("**/display memory.txt"))
+    # hw_get_mem(memList)
 
