@@ -7,11 +7,12 @@ import glob
 
 
 def hw_get_uptime(filelist):
-    df_uptime = pd.DataFrame(columns=['设备名', '运行时间'])
+    df_uptime = pd.DataFrame(columns=['设备名', '设备IP地址', '运行时间'])
     n = 1
     for file_list in filelist:
         with open(file_list) as f:
-            device = re.findall(r"\b10.*/", str(f))[0][0:-1]
+            device = re.findall(r"[0-9]{1,9}_(.+?)/", str(f))[0]
+            deviceip = re.findall(r"[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}", str(f))[0]
             lines = f.readlines()
             lines = [i.strip() for i in lines]
             lines = [i.strip('-') for i in lines]
@@ -23,18 +24,19 @@ def hw_get_uptime(filelist):
                     pass
                 else:
                     uptime = data_ver[i]
-            dict1 = {'设备名': device, '运行时间': uptime}
+            dict1 = {'设备名': device, '设备IP地址': deviceip, '运行时间': uptime}
             df1 = pd.DataFrame(dict1, index=[n])
             df_uptime = pd.concat([df_uptime, df1], join="outer", axis=0, copy=False, ignore_index=True)
     df_uptime.to_excel('ver.xlsx', sheet_name='hw_version', index=False)
 
 
 def hw_get_mem(filelist):
-    df_mem = pd.DataFrame(columns=['设备名', '内存使用率'])
+    df_mem = pd.DataFrame(columns=['设备名', '设备IP地址', '内存使用率'])
     n = 1
     for file_list in filelist:
         with open(file_list) as f:
-            device = re.findall(r"\b10.*/", str(f))[0][0:-1]
+            device = re.findall(r"[0-9]{1,9}_(.+?)/", str(f))[0]
+            deviceip = re.findall(r"[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}", str(f))[0]
             lines = f.readlines()
             lines = [i.strip() for i in lines]
             lines = [i.strip('-') for i in lines]
@@ -47,7 +49,7 @@ def hw_get_mem(filelist):
                 else:
                     mem_data = data_mem[i]
                     mem_data = re.findall(r'\b[0-9]{1,2}%', str(mem_data))
-            dict1_mem = {'设备名': device, '内存使用率': mem_data}
+            dict1_mem = {'设备名': device, '设备IP地址': deviceip, '内存使用率': mem_data}
             df1_mem = pd.DataFrame(dict1_mem, index=[n])
             n = n + 1
             df_mem = pd.concat([df_mem, df1_mem], join="outer", axis=0, copy=False, ignore_index=True)
@@ -57,11 +59,12 @@ def hw_get_mem(filelist):
 
 
 def hw_get_cpu(filelist):
-    df_cpu = pd.DataFrame(columns=['设备名', 'CPU利用率'])
+    df_cpu = pd.DataFrame(columns=['设备名', '设备IP地址', 'CPU利用率'])
     n = 1
     for file_list in filelist:
         with open(file_list) as f:
-            device = re.findall(r"\b10.*/", str(f))[0][0:-1]
+            device = re.findall(r"[0-9]{1,9}_(.+?)/", str(f))[0]
+            deviceip = re.findall(r"[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}", str(f))[0]
             lines = f.readlines()
             lines = [i.strip() for i in lines]
             lines = [i.strip('-') for i in lines]
@@ -73,7 +76,7 @@ def hw_get_cpu(filelist):
                     pass
                 else:
                     cpu_data = data_cpu[i]
-            dict1_cpu = {'设备名': device, 'CPU利用率': cpu_data}
+            dict1_cpu = {'设备名': device, '设备IP地址': deviceip, 'CPU利用率': cpu_data}
             df1_cpu = pd.DataFrame(dict1_cpu, index=[n])
             n = n + 1
             df_cpu = pd.concat([df_cpu, df1_cpu], join="outer", axis=0, copy=False, ignore_index=True)
@@ -83,11 +86,12 @@ def hw_get_cpu(filelist):
 
 
 def cisco_get_cpu(filelist):
-    df_cpu_cisco = pd.DataFrame(columns=['设备名', 'CPU利用率'])
+    df_cpu_cisco = pd.DataFrame(columns=['设备名', '设备IP地址', 'CPU利用率'])
     n = 1
     for file_list in filelist:
         with open(file_list) as f:
-            device = re.findall(r"\b10.*/", str(f))[0][0:-1]
+            device = re.findall(r"[0-9]{1,9}_(.+?)/", str(f))[0]
+            deviceip = re.findall(r"[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}", str(f))[0]
             lines = f.readlines()
             lines = [i.strip() for i in lines]
             lines = [i.strip('-') for i in lines]
@@ -100,7 +104,7 @@ def cisco_get_cpu(filelist):
                     pass
                 else:
                     cpu_data = data_cpu[i]
-            dict1_cpu = {'设备名': device, 'CPU利用率': cpu_data}
+            dict1_cpu = {'设备名': device, '设备IP地址': deviceip, 'CPU利用率': cpu_data}
             df1_cpu = pd.DataFrame(dict1_cpu, index=[n])
             n = n + 1
             df_cpu_cisco = pd.concat([df_cpu_cisco, df1_cpu], join="outer", axis=0, copy=False, ignore_index=True)
@@ -110,11 +114,12 @@ def cisco_get_cpu(filelist):
 
 
 def cisco_get_mem(filelist):
-    df_mem_cisco = pd.DataFrame(columns=['设备名', '内存利用率', 'Total', 'Used'])
+    df_mem_cisco = pd.DataFrame(columns=['设备名', '设备IP地址', '内存利用率', 'Total', 'Used'])
     n = 1
     for file_list in filelist:
         with open(file_list) as f:
-            device = re.findall(r"\b10.*/", str(f))[0][0:-1]
+            device = re.findall(r"[0-9]{1,9}_(.+?)/", str(f))[0]
+            deviceip = re.findall(r"[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}", str(f))[0]
             lines = f.readlines()
             lines = [i.strip() for i in lines]
             lines = [i.strip('-') for i in lines]
@@ -131,8 +136,8 @@ def cisco_get_mem(filelist):
                     for total in total_mem:
                         for used in used_mem:
                             mem_utilization = used/total
-                    mem_data_cisco = '{:.2f}%'.format(mem_utilization * 100)
-                    dict1_mem = {'设备名': device, '内存利用率': mem_data_cisco, 'Total': total_mem, 'Used': used_mem}
+                    mem_data_cisco = '{:.0f}%'.format(mem_utilization * 100)
+                    dict1_mem = {'设备名': device, '设备IP地址': deviceip, '内存利用率': mem_data_cisco, 'Total': total_mem, 'Used': used_mem}
                     df1_mem = pd.DataFrame(dict1_mem, index=[n])
                     n = n + 1
                     df_mem_cisco = pd.concat([df_mem_cisco, df1_mem], join="outer", axis=0, copy=False, ignore_index=True)
@@ -142,11 +147,12 @@ def cisco_get_mem(filelist):
 
 
 def cisco_get_uptime(filelist):
-    df_uptime_cisco = pd.DataFrame(columns=['设备名', '设备运行时间'])
+    df_uptime_cisco = pd.DataFrame(columns=['设备名', '设备IP地址', '设备运行时间'])
     n = 1
     for file_list in filelist:
         with open(file_list) as f:
-            device = re.findall(r"\b10.*/", str(f))[0][0:-1]
+            device = re.findall(r"[0-9]{1,9}_(.+?)/", str(f))[0]
+            deviceip = re.findall(r"[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}", str(f))[0]
             lines = f.readlines()
             lines = [i.strip() for i in lines]
             lines = [i.strip('-') for i in lines]
@@ -158,7 +164,7 @@ def cisco_get_uptime(filelist):
                     pass
                 else:
                     uptime_data = data_uptime[i]
-                    dict1_uptime = {'设备名': device, '设备运行时间': uptime_data}
+                    dict1_uptime = {'设备名': device, '设备IP地址': deviceip, '设备运行时间': uptime_data}
                     df1_uptime = pd.DataFrame(dict1_uptime, index=[n])
                     n = n + 1
                     df_uptime_cisco = pd.concat([df_uptime_cisco, df1_uptime], join="outer", axis=0, copy=False, ignore_index=True)
