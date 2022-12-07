@@ -110,7 +110,7 @@ def cisco_get_cpu(filelist):
 
 
 def cisco_get_mem(filelist):
-    df_mem_cisco = pd.DataFrame(columns=['设备名', '内存利用率'])
+    df_mem_cisco = pd.DataFrame(columns=['设备名', '内存利用率', 'Total', 'Used'])
     n = 1
     for file_list in filelist:
         with open(file_list) as f:
@@ -132,7 +132,7 @@ def cisco_get_mem(filelist):
                         for used in used_mem:
                             mem_utilization = used/total
                     mem_data_cisco = '{:.2f}%'.format(mem_utilization * 100)
-                    dict1_mem = {'设备名': device, '内存利用率': mem_data_cisco}
+                    dict1_mem = {'设备名': device, '内存利用率': mem_data_cisco, 'Total': total_mem, 'Used': used_mem}
                     df1_mem = pd.DataFrame(dict1_mem, index=[n])
                     n = n + 1
                     df_mem_cisco = pd.concat([df_mem_cisco, df1_mem], join="outer", axis=0, copy=False, ignore_index=True)
