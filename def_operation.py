@@ -126,21 +126,49 @@ def cisco_get_mem(filelist):
             data = list(filter(None, lines))
             data_mem = data[0:100]
             for i in range(len(data_mem)):
-                data_mem[i] = re.findall(r'Processor Pool Total.*', data_mem[i])
-                if len(data_mem[i]) == 0:
-                    pass
-                else:
+                if 'System memory' in data_mem[i]:
                     mem_data = data_mem[i]
-                    total_mem = list(map(int, re.findall(r'Total:(.+?)Used', mem_data[0])))
-                    used_mem = list(map(int, re.findall(r'Used:(.+?)Free', mem_data[0])))
+                    total_mem = re.findall(r'System memory  :(.+?)K', mem_data)
+                    used_mem = re.findall(r'total,(.+?)K used', mem_data)
                     for total in total_mem:
                         for used in used_mem:
-                            mem_utilization = used/total
+                            mem_utilization = int(used) / int(total)
+                            print(mem_utilization)
                     mem_data_cisco = '{:.0f}%'.format(mem_utilization * 100)
                     dict1_mem = {'设备名': device, '设备IP地址': deviceip, '内存利用率': mem_data_cisco, 'Total': total_mem, 'Used': used_mem}
                     df1_mem = pd.DataFrame(dict1_mem, index=[n])
                     n = n + 1
                     df_mem_cisco = pd.concat([df_mem_cisco, df1_mem], join="outer", axis=0, copy=False, ignore_index=True)
+                elif 'Processor Pool Total' in data_mem[i]:
+                    mem_data = data_mem[i]
+                    total_mem = re.findall(r'Total:(.+?)Used', mem_data)
+                    used_mem = re.findall(r'Used:(.+?)Free', mem_data)
+                    for total in total_mem:
+                        for used in used_mem:
+                            mem_utilization = int(used) / int(total)
+                    mem_data_cisco = '{:.0f}%'.format(mem_utilization * 100)
+                    dict1_mem = {'设备名': device, '设备IP地址': deviceip, '内存利用率': mem_data_cisco, 'Total': total_mem, 'Used': used_mem}
+                    df1_mem = pd.DataFrame(dict1_mem, index=[n])
+                    n = n + 1
+                    df_mem_cisco = pd.concat([df_mem_cisco, df1_mem], join="outer", axis=0, copy=False, ignore_index=True)
+                else:
+                    pass
+
+                # data_mem[i] = re.findall(r'Processor Pool Total.*', data_mem[i])
+    #             if len(data_mem[i]) == 0:
+    #                 pass
+    #             else:
+    #                 mem_data = data_mem[i]
+    #                 total_mem = list(map(int, re.findall(r'Total:(.+?)Used', mem_data[0])))
+    #                 used_mem = list(map(int, re.findall(r'Used:(.+?)Free', mem_data[0])))
+    #                 for total in total_mem:
+    #                     for used in used_mem:
+    #                         mem_utilization = used/total
+    #                 mem_data_cisco = '{:.0f}%'.format(mem_utilization * 100)
+    #                 dict1_mem = {'设备名': device, '设备IP地址': deviceip, '内存利用率': mem_data_cisco, 'Total': total_mem, 'Used': used_mem}
+    #                 df1_mem = pd.DataFrame(dict1_mem, index=[n])
+    #                 n = n + 1
+    #                 df_mem_cisco = pd.concat([df_mem_cisco, df1_mem], join="outer", axis=0, copy=False, ignore_index=True)
     df_write_mem = pd.ExcelWriter('ver.xlsx', mode='a', engine='openpyxl', if_sheet_exists='new')
     df_mem_cisco.to_excel(df_write_mem, sheet_name='cisco_mem', index=False)
     df_write_mem.close()
