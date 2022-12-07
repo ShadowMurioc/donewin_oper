@@ -97,6 +97,7 @@ def cisco_get_cpu(filelist):
             lines = [i.strip('-') for i in lines]
             data = list(filter(None, lines))
             data_cpu = data[0:100]
+            print(data_cpu)
             for i in range(len(data_cpu)):
                 if 'CPU utilization' in data_cpu[i]:
                     cpu_data = data_cpu[i]
@@ -105,12 +106,22 @@ def cisco_get_cpu(filelist):
                     n = n + 1
                     df_cpu_cisco = pd.concat([df_cpu_cisco, df1_cpu], join="outer", axis=0, copy=False,
                                              ignore_index=True)
+                elif 'Incomplete command' in data_cpu[i]:
+                    cpu_data = '数据未检索到！！！'
+                    dict1_cpu = {'设备名': device, '设备IP地址': deviceip, 'CPU利用率': cpu_data}
+                    df1_cpu = pd.DataFrame(dict1_cpu, index=[n])
+                    n = n + 1
+                    df_cpu_cisco = pd.concat([df_cpu_cisco, df1_cpu], join="outer", axis=0, copy=False,
+                                             ignore_index=True)
+                elif 'Invalid command' in data_cpu[i]:
+                    cpu_data = '数据未检索到！！！'
+                    dict1_cpu = {'设备名': device, '设备IP地址': deviceip, 'CPU利用率': cpu_data}
+                    df1_cpu = pd.DataFrame(dict1_cpu, index=[n])
+                    n = n + 1
+                    df_cpu_cisco = pd.concat([df_cpu_cisco, df1_cpu], join="outer", axis=0, copy=False,
+                                             ignore_index=True)
                 else:
                     pass
-                # if len(data_cpu[i]) == 0:
-                #     pass
-                # else:
-                #     cpu_data = data_cpu[i]
     df_write_cpu = pd.ExcelWriter('ver.xlsx', mode='a', engine='openpyxl', if_sheet_exists='new')
     df_cpu_cisco.to_excel(df_write_cpu, sheet_name='cisco_cpu', index=False)
     df_write_cpu.close()
