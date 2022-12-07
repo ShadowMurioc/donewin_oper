@@ -141,16 +141,44 @@ def cisco_get_mem(filelist):
     df_write_mem.close()
 
 
+def cisco_get_uptime(filelist):
+    df_uptime_cisco = pd.DataFrame(columns=['设备名', '设备运行时间'])
+    n = 1
+    for file_list in filelist:
+        with open(file_list) as f:
+            device = re.findall(r"\b10.*/", str(f))[0][0:-1]
+            lines = f.readlines()
+            lines = [i.strip() for i in lines]
+            lines = [i.strip('-') for i in lines]
+            data = list(filter(None, lines))
+            data_uptime = data[0:100]
+            for i in range(len(data_uptime)):
+                data_uptime[i] = re.findall(r'up.*[0-9]{1,10}.*hour.*', data_uptime[i])
+                if len(data_uptime[i]) == 0:
+                    pass
+                else:
+                    uptime_data = data_uptime[i]
+                    dict1_uptime = {'设备名': device, '设备运行时间': uptime_data}
+                    df1_uptime = pd.DataFrame(dict1_uptime, index=[n])
+                    n = n + 1
+                    df_uptime_cisco = pd.concat([df_uptime_cisco, df1_uptime], join="outer", axis=0, copy=False, ignore_index=True)
+    df_write_uptime = pd.ExcelWriter('ver.xlsx', mode='a', engine='openpyxl', if_sheet_exists='new')
+    df_uptime_cisco.to_excel(df_write_uptime, sheet_name='cisco_uptime', index=False)
+    df_write_uptime.close()
+
+
 if __name__ == '__main__':
     p = os.path.dirname(os.path.abspath(__file__))
     p = Path(p)
-    # verList = list(p.glob("**/display version.txt"))
-    # hw_get_uptime(verList)
-    # memList = list(p.glob("**/display memory.txt"))
-    # hw_get_mem(memList)
-    # cpuList = list(p.glob("**/display cpu-usage.txt"))
-    # hw_get_cpu(cpuList)
-    # cpuList_cisco = list(p.glob("**/show process cpu.txt"))
-    # cisco_get_cpu(cpuList_cisco)
+    verList = list(p.glob("**/display version.txt"))
+    hw_get_uptime(verList)
+    memList = list(p.glob("**/display memory.txt"))
+    hw_get_mem(memList)
+    cpuList = list(p.glob("**/display cpu-usage.txt"))
+    hw_get_cpu(cpuList)
+    cpuList_cisco = list(p.glob("**/show process cpu.txt"))
+    cisco_get_cpu(cpuList_cisco)
     memList_cisco = list(p.glob("**/show process memory.txt"))
     cisco_get_mem(memList_cisco)
+    uptimeList_cisco = list(p.glob("**/show version.txt"))
+    cisco_get_uptime(uptimeList_cisco)
