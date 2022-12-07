@@ -97,7 +97,6 @@ def cisco_get_cpu(filelist):
             lines = [i.strip('-') for i in lines]
             data = list(filter(None, lines))
             data_cpu = data[0:100]
-            print(data_cpu)
             for i in range(len(data_cpu)):
                 if 'CPU utilization' in data_cpu[i]:
                     cpu_data = data_cpu[i]
@@ -219,13 +218,13 @@ if __name__ == '__main__':
     p = Path(p)
     verList = list(p.glob("**/display version.txt"))
     hw_get_uptime(verList)
-    # memList = list(p.glob("**/display memory.txt"))
-    # hw_get_mem(memList)
-    # cpuList = list(p.glob("**/display cpu-usage.txt"))
-    # hw_get_cpu(cpuList)
+    memList = list(p.glob("**/display memory.txt"))
+    hw_get_mem(memList)
+    cpuList = list(p.glob("**/display cpu-usage.txt"))
+    hw_get_cpu(cpuList)
     cpuList_cisco = list(p.glob("**/show process cpu.txt"))
     cisco_get_cpu(cpuList_cisco)
-    # memList_cisco = list(p.glob("**/show process memory.txt"))
-    # cisco_get_mem(memList_cisco)
-    # uptimeList_cisco = list(p.glob("**/show version.txt"))
-    # cisco_get_uptime(uptimeList_cisco)
+    memList_cisco = list(p.glob("**/show process memory.txt"))
+    cisco_get_mem(memList_cisco)
+    uptimeList_cisco = list(p.glob("**/show version.txt"))
+    cisco_get_uptime(uptimeList_cisco)
