@@ -97,17 +97,20 @@ def cisco_get_cpu(filelist):
             lines = [i.strip('-') for i in lines]
             data = list(filter(None, lines))
             data_cpu = data[0:100]
-
             for i in range(len(data_cpu)):
-                data_cpu[i] = re.findall(r'CPU utilization.*', data_cpu[i])
-                if len(data_cpu[i]) == 0:
-                    pass
-                else:
+                if 'CPU utilization' in data_cpu[i]:
                     cpu_data = data_cpu[i]
-            dict1_cpu = {'设备名': device, '设备IP地址': deviceip, 'CPU利用率': cpu_data}
-            df1_cpu = pd.DataFrame(dict1_cpu, index=[n])
-            n = n + 1
-            df_cpu_cisco = pd.concat([df_cpu_cisco, df1_cpu], join="outer", axis=0, copy=False, ignore_index=True)
+                    dict1_cpu = {'设备名': device, '设备IP地址': deviceip, 'CPU利用率': cpu_data}
+                    df1_cpu = pd.DataFrame(dict1_cpu, index=[n])
+                    n = n + 1
+                    df_cpu_cisco = pd.concat([df_cpu_cisco, df1_cpu], join="outer", axis=0, copy=False,
+                                             ignore_index=True)
+                else:
+                    pass
+                # if len(data_cpu[i]) == 0:
+                #     pass
+                # else:
+                #     cpu_data = data_cpu[i]
     df_write_cpu = pd.ExcelWriter('ver.xlsx', mode='a', engine='openpyxl', if_sheet_exists='new')
     df_cpu_cisco.to_excel(df_write_cpu, sheet_name='cisco_cpu', index=False)
     df_write_cpu.close()
@@ -133,7 +136,6 @@ def cisco_get_mem(filelist):
                     for total in total_mem:
                         for used in used_mem:
                             mem_utilization = int(used) / int(total)
-                            print(mem_utilization)
                     mem_data_cisco = '{:.0f}%'.format(mem_utilization * 100)
                     dict1_mem = {'设备名': device, '设备IP地址': deviceip, '内存利用率': mem_data_cisco, 'Total': total_mem, 'Used': used_mem}
                     df1_mem = pd.DataFrame(dict1_mem, index=[n])
@@ -206,13 +208,13 @@ if __name__ == '__main__':
     p = Path(p)
     verList = list(p.glob("**/display version.txt"))
     hw_get_uptime(verList)
-    memList = list(p.glob("**/display memory.txt"))
-    hw_get_mem(memList)
-    cpuList = list(p.glob("**/display cpu-usage.txt"))
-    hw_get_cpu(cpuList)
+    # memList = list(p.glob("**/display memory.txt"))
+    # hw_get_mem(memList)
+    # cpuList = list(p.glob("**/display cpu-usage.txt"))
+    # hw_get_cpu(cpuList)
     cpuList_cisco = list(p.glob("**/show process cpu.txt"))
     cisco_get_cpu(cpuList_cisco)
-    memList_cisco = list(p.glob("**/show process memory.txt"))
-    cisco_get_mem(memList_cisco)
-    uptimeList_cisco = list(p.glob("**/show version.txt"))
-    cisco_get_uptime(uptimeList_cisco)
+    # memList_cisco = list(p.glob("**/show process memory.txt"))
+    # cisco_get_mem(memList_cisco)
+    # uptimeList_cisco = list(p.glob("**/show version.txt"))
+    # cisco_get_uptime(uptimeList_cisco)
